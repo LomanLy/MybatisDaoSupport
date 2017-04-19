@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd ">
+
+    <!-- 引入jdbc配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/*.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbcUrl}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="filters" value="stat"/>
+        <property name="initialSize" value="${initialSize}"/>
+        <property name="maxActive" value="${maxActive}"/>
+        <property name="minIdle" value="${minIdle}"/>
+        <property name="maxWait" value="60000"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+    </bean>
+
+    <!-- SqlSession -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:orm/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+         <constructor-arg index="0" ref="sqlSessionFactory"/>
+     </bean>
+
+    <!--自动扫描所有的xxxMapper.xml对应的mapper接口文件，这样就不用
+    一个个手动配置mapper的映射，只要Mapper接口类和Mapper映射文件对应起来就可以了-->
+    <!--<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.loman.dao"/>
+    </bean>-->
+
+
+    <context:component-scan base-package="com.loman"/>
+
+</beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userMapper">
+    <resultMap id="BaseResultMap" type="com.loman.bean.User">
+        <id column="USER_ID" property="userId" javaType="INTEGER"/>
+        <id column="USER_NAME" property="userName" javaType="String"/>
+        <id column="USER_PASSWORD" property="userPassWord" javaType="String"/>
+    </resultMap>
+    <!--查询单条记录-->
+    <select id="selectUserById" parameterType="int" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE USER_ID = #{userId}
+    </select>
+
+    <!--根据用户名查询-->
+    <select id="selectUserByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE 1 = 1
+        <if test="userName != null and userName != '' ">
+            AND USER_NAME = #{userName,jdbcType=VARCHAR}
+        </if>
+        ORDER BY USER_ID
+    </select>
+</mapper>
